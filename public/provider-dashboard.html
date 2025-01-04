@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        $("#lblUserId").html($.cookie("username")); // Display the logged-in user's name
+    </script>
+</head>
+<body>
+    <div class="bg-light p-4">
+        <h5 class="d-flex justify-content-between align-items-center">
+            <span id="lblUserId"></span>
+            <span>
+                Dashboard
+                <button id="btnCreateProfile" class="btn btn-warning"> Create Profile </button>
+            </span>
+            <button class="btn btn-danger" id="btnSignout">Signout</button>
+        </h5>
+        <div id="appointmentContainer" class="d-flex flex-wrap">
+
+        </div>
+    </div>
+</body>
+</html>
