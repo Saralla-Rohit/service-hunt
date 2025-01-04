@@ -1,3 +1,7 @@
+# Ignore all jpg files in uploads folder
+uploads/*.jpg   
+
+
 # Logs
 logs
 *.log

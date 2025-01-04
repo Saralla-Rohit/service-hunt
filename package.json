@@ -4,7 +4,8 @@
   "description": "user can access all types of services info at one place in their locality which gives user variety of options to pick from",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "api":"nodemon .\\server\\api.js"
   },
   "repository": {
     "type": "git",
