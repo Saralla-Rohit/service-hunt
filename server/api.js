@@ -41,6 +41,33 @@ app.get("/providers", (req, res) => {
         })
     })
 })
+app.post("/create-profile",(req,res)=>{
+    var profile={
+        UserName:req.body.UserName,
+        Email:req.body.Email,
+        MobileNumber:req.body.Mobile,
+        YearsOfExperience:parseInt(req.body.YearsOfExperience),
+        HourlyRate:parseInt(req.body.HourlyRate),
+        Service:req.body.Service,
+        UserId: parseInt(req.body.UserId)
+    }
+    mongoClient.connect(conString).then(clientObj=>{
+        clientObj.db("serviceHunt").collection("providersInfo").insertOne(profile).then(()=>{
+            console.log("Profile Created")
+            res.send(profile)
+        })
+    })
+})
+app.get("/get-profile/:UserId", (req, res) => {
+    mongoClient.connect(conString).then(clientObj => {
+        var db = clientObj.db("serviceHunt");
+        db.collection("providersInfo").find({ UserId: parseInt(req.params.UserId) }).toArray().then(room => {
+            res.json(room)
+            console.log(room)
+        })
+    })
+})
+
 
 app.listen(5500,()=>{
     console.log("app is listening on http://localhost:5500")

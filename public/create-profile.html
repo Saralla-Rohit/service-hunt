@@ -1,11 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    create profile
-</body>
-</html>
+<div class="bg-light text-dark p-4">
+    <h2>Create Profile</h2>
+    <div id="professionalForm">
+        <dl class="professional-form">
+            <!-- Name Field -->
+            <dt>Full Name</dt>
+            <dd><input type="text" class="form-control " id="txtName"></dd>
+
+            <!-- Email Field -->
+            <dt>Email</dt>
+            <dd><input type="email" class="form-control " id="txtEmail"></dd>
+
+            <!-- Mobile Number Field -->
+            <dt>Mobile Number</dt>
+            <dd><input type="tel" class="form-control " id="txtMobileNumber"></dd>
+
+            <!-- Grouping Years of Experience and Hourly Rate in a single row -->
+            <dt>Experience & Hourly Rate</dt>
+            <dd class="d-flex justify-content-between">
+                <!-- Years of Experience -->
+                <input type="number" class="form-control w-45 me-2" id="txtYearsOfExperience" placeholder="Years of Experience">
+                
+                <!-- Hourly Rate -->
+                <input type="number" class="form-control w-45 ms-2" id="txtHourlyRate" placeholder="Hourly Rate">
+            </dd>
+
+            <!-- Services Provided (Multi-select dropdown) -->
+            <dt>Services Provided</dt>
+            <dd>
+                <select class="form-control " id="selServices">
+                    <!-- Available services for selection -->
+                    <option value="Plumber">Plumber</option>
+                    <option value="Electrician">Electrician</option>
+                    <option value="Tutor">Tutor</option>
+                    <option value="Mechanic">Mechanic</option>
+                    <option value="Carpenter">Carpenter</option>
+                    <option value="Chef">Chef</option>
+                    <option value="Nurse">Nurse</option>
+                    <option value="Photographer">Photographer</option>
+                    <option value="Hairdresser">Hairdresser</option>
+                    <option value="Vet">Vet</option>
+                </select>
+            </dd>
+
+      
+        </dl>
+
+        <div class="button-group">
+       `     <!-- Button to add the professional details -->
+            <button type="button"  id="createBtn" class="btn btn-primary w-100">Add Professional</button>
+            
+            <!-- Button to cancel the action and reset the form -->
+            <button type="button" id="btnCancelCreate" class="btn btn-danger w-100 mt-2">Cancel</button>
+        </div>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-$(function(){
+$(function () {
     function loadView(url) {
         $.ajax({
             method: "get",
@@ -13,7 +13,7 @@ $(function(){
     if (userId) {
         loadView("../public/provider-dashboard.html");
         // GetRooms(userId);
-    }else{
+    } else {
         loadView("../public/home.html")
     }
     $(document).on("click", "#btnServiceProvider", () => {
@@ -28,7 +28,7 @@ $(function(){
     $(document).on("click", "#btnCancel", () => {
         loadView("../public/auth.html");
     });
-    $(document).on("click",".back",()=>{
+    $(document).on("click", ".back", () => {
         loadView("../public/index.html")
     })
     $(document).on("click", "#btnRegister", () => {
@@ -51,7 +51,6 @@ $(function(){
         });
     });
     $(document).on("keyup", "#txtRUserId", (e) => {
-        console.log("User Id Typed: ", e.target.value);
         $.ajax({
             method: "get",
             url: "http://localhost:5500/providers",
@@ -86,7 +85,6 @@ $(function(){
                         $.cookie("userid", user.UserId);
                         $.cookie("username", user.UserName);
                         loadView("../public/provider-dashboard.html");
-                        GetRooms(user.UserId);
                     } else {
                         alert("Invalid password");
                     }
@@ -101,9 +99,45 @@ $(function(){
         $.removeCookie("userid");
         loadView("../public/login.html");
     });
-    $(document).on("click","#btnCreateProfile",()=>{
+    $(document).on("click", "#btnCreateProfile", () => {
         loadView("../public/create-profile.html")
     })
-    
+    $(document).on("click", "#btnCancelCreate", () => {
+        loadView("../public/provider-dashboard.html")
+    })
+
+    $(document).on("click", "#createBtn", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        var profile = {
+            UserName: $("#txtName").val(),
+            Email: $("#txtEmail").val(),
+            MobileNumber: $("#txtMobileNumber").val(),
+            YearsOfExperience: $("#txtYearsOfExperience").val(),
+            HourlyRate: $("#txtHourlyRate").val(),
+            Service: $("#selServices").val(),
+            UserId: $.cookie("userid")
+
+        }
+        $.ajax({
+            method: "post",
+            url: "http://localhost:5500/create-profile",
+            data: profile,
+            success: () => {
+                alert("Created Profile Successfully")
+                $("#txtName").val("");
+                $("#txtEmail").val("")
+                $("#txtMobileNumber").val("")
+                $("#txtYearsOfExperience").val("")
+                $("#txtHourlyRate").val(""),
+                $("#selServices").val(""),
+                // $("#ProfileContainer").val("");
+                loadView("../public/provider-dashboard.html")
+            }
+        })
+    })
+
 
 })
+$("#ProfileContainer").val("");
