@@ -49,7 +49,7 @@ app.post("/create-profile", (req, res) => {
     var profile = {
         UserName: req.body.UserName,
         Email: req.body.Email,
-        MobileNumber: req.body.Mobile,
+        MobileNumber: req.body.MobileNumber,
         YearsOfExperience: parseInt(req.body.YearsOfExperience),
         HourlyRate: parseInt(req.body.HourlyRate),
         Service: req.body.Service,
@@ -79,6 +79,28 @@ app.get("/get-profile/:UserId", (req, res) => {
         });
     });
 });
+app.put("/edit-profile/:UserId",(req,res)=>{
+    var profile = {
+        UserName: req.body.UserName,
+        Email: req.body.Email,
+        MobileNumber: req.body.MobileNumber,
+        YearsOfExperience: parseInt(req.body.YearsOfExperience),
+        HourlyRate: parseInt(req.body.HourlyRate),
+        Service: req.body.Service,
+        UserId: parseInt(req.body.UserId)
+    };
+    mongoClient.connect(conString).then(clientObj=>{
+        var db=clientObj.db("serviceHunt");
+        db.collection("providersInfo").updateOne(
+            {UserId:parseInt(req.params.UserId)},
+            {$set:profile}
+        ).then(()=>{
+            console.log("Profile Updated")
+            res.send(profile)
+        })
+    })
+})
+
 
 app.listen(5500, () => {
     console.log("app is listening on http://localhost:5500");

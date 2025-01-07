@@ -1,0 +1,53 @@
+<div class="bg-light text-dark p-4">
+    <h2>Edit Profile</h2>
+    <div id="editProfileForm">
+        <dl class="professional-form">
+            <!-- Full Name Field -->
+            <dt>Full Name</dt>
+            <dd><input type="text" class="form-control" id="txtEditName"></dd>
+
+            <!-- Email Field -->
+            <dt>Email</dt>
+            <dd><input type="email" class="form-control" id="txtEditEmail"></dd>
+
+            <!-- Mobile Number Field -->
+            <dt>Mobile Number</dt>
+            <dd><input type="tel" class="form-control" id="txtEditMobileNumber"></dd>
+
+            <!-- Grouping Years of Experience and Hourly Rate in a single row -->
+            <dt>Experience & Hourly Rate</dt>
+            <dd class="d-flex justify-content-between">
+                <!-- Years of Experience -->
+                <input type="number" class="form-control w-45 me-2" id="txtEditYearsOfExperience" placeholder="Years of Experience">
+                
+                <!-- Hourly Rate -->
+                <input type="number" class="form-control w-45 ms-2" id="txtEditHourlyRate" placeholder="Hourly Rate">
+            </dd>
+
+            <!-- Services Provided (Multi-select dropdown) -->
+            <dt>Services Provided</dt>
+            <dd>
+                <select class="form-control" id="selEditServices">
+                    <option value="Plumber">Plumber</option>
+                    <option value="Electrician">Electrician</option>
+                    <option value="Tutor">Tutor</option>
+                    <option value="Mechanic">Mechanic</option>
+                    <option value="Carpenter">Carpenter</option>
+                    <option value="Chef">Chef</option>
+                    <option value="Nurse">Nurse</option>
+                    <option value="Photographer">Photographer</option>
+                    <option value="Hairdresser">Hairdresser</option>
+                    <option value="Vet">Vet</option>
+                </select>
+            </dd>
+        </dl>
+
+        <div class="button-group">
+            <!-- Button to save the updated profile -->
+            <button type="button" id="btnEdit"  class="btn btn-primary w-100">Save Changes</button>
+            
+            <!-- Button to cancel the editing action -->
+            <button type="button" id="btnCancelEdit" class="btn btn-danger w-100 mt-2">Cancel</button>
+        </div>
+    </div>
+</div>
