@@ -78,7 +78,7 @@ const profileTemplate = (profile) =>
                 </div>
             </div>
             <div class="text-center mt-3">
-                <button class="btn btn-warning" id="btnEdit" value="${userId}">Edit Profile</button>
+                <button class="btn btn-warning" id="btnEdit" value="${profile.UserId}">Edit Profile</button>
             </div>
         </div>
     </div>`;
@@ -91,8 +91,11 @@ if (userId) {
             method: "get",
             url: `http://localhost:5500/get-profile/${userId}`,
             success: (profile) => {
-                if (profile && profile.UserName) {
+                if (profile) {
                     $("#ProfileContainer").html(profileTemplate(profile));
+                } else {
+                    console.log("No profile found");
+                    $("#ProfileContainer").html("<p>No profile found. Please create your profile.</p>");
                 }
             },
             error: (err) => {
@@ -205,21 +208,33 @@ $(document).on("click", "#createBtn", (e) => {
 });
 
 $(document).on("click", "#btnEdit", (e) => {
-    const UserId = e.target.value;
+    e.preventDefault();
+    const UserId = e.target.value || $.cookie("userid"); // Fallback to cookie if button value is empty
+    if (!UserId) {
+        console.error("No UserId found");
+        alert("User ID not found. Please try logging in again.");
+        return;
+    }
+    
     loadView("../public/edit-profile.html");
 
     $.ajax({
         method: "get",
-        url: `http://localhost:5500/get-profile/${UserId}`,  // Ensure the userId is part of the URL
+        url: `http://localhost:5500/get-profile/${UserId}`,
         success: (profile) => {
             console.log("Profile fetched:", profile);
-            // Fill the form with the profile data
-            $("#txtEditName").val(profile.UserName);
-            $("#txtEditEmail").val(profile.Email);
-            $("#txtEditMobileNumber").val(profile.MobileNumber);
-            $("#txtEditYearsOfExperience").val(profile.YearsOfExperience);
-            $("#txtEditHourlyRate").val(profile.HourlyRate);
-            $("#selServices").val(profile.Service);
+            if (profile) {
+                // Fill the form with the profile data
+                $("#txtEditName").val(profile.UserName);
+                $("#txtEditEmail").val(profile.Email);
+                $("#txtEditMobileNumber").val(profile.MobileNumber);
+                $("#txtEditYearsOfExperience").val(profile.YearsOfExperience);
+                $("#txtEditHourlyRate").val(profile.HourlyRate);
+                $("#selServices").val(profile.Service);
+            } else {
+                console.log("No profile found");
+                alert("Profile not found");
+            }
         },
         error: (err) => {
             console.error("Error fetching profile:", err);
@@ -229,23 +244,62 @@ $(document).on("click", "#btnEdit", (e) => {
 });
 
 $(document).on("click", "#btnSave", () => {
+    const UserId = $.cookie("userid");
+    console.log("Save clicked, UserId from cookie:", UserId);
+    
+    if (!UserId) {
+        console.error("No UserId found");
+        alert("User ID not found. Please try logging in again.");
+        return;
+    }
+
     var profile = {
-        UserName: $("#txtName").val(),
-        Email: $("#txtEmail").val(),
-        MobileNumber: $("#txtMobileNumber").val(),
-        YearsOfExperience: $("#txtYearsOfExperience").val(),
-        HourlyRate: $("#txtHourlyRate").val(),
+        UserName: $("#txtEditName").val(),
+        Email: $("#txtEditEmail").val(),
+        MobileNumber: $("#txtEditMobileNumber").val(),
+        YearsOfExperience: $("#txtEditYearsOfExperience").val(),
+        HourlyRate: $("#txtEditHourlyRate").val(),
         Service: $("#selServices").val(),
-        UserId: $.cookie("userid")
+        UserId: parseInt(UserId)
     };
+    
+    console.log("Sending profile data:", profile);
 
     $.ajax({
         method: "put",
-        url: `http://localhost:5500/edit-profile/${profile.UserId}`,
-        data: profile,
-        success: () => {
-            alert("Profile updated");
-            loadView("../public/provider-dashboard.html");
+        url: `http://localhost:5500/edit-profile/${UserId}`,
+        data: JSON.stringify(profile),
+        contentType: "application/json",
+        dataType: "json",
+        xhrFields: {
+            withCredentials: true
+        },
+        crossDomain: true,
+        success: (response) => {
+            console.log("Profile update response:", response);
+            alert("Profile updated successfully!");
+            loadView("../public/provider-dashboard.html", () => {
+                // Refresh the profile data after update
+                $.ajax({
+                    method: "get",
+                    url: `http://localhost:5500/get-profile/${UserId}`,
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    crossDomain: true,
+                    success: (updatedProfile) => {
+                        console.log("Updated profile:", updatedProfile);
+                        $("#ProfileContainer").html(profileTemplate(updatedProfile));
+                    },
+                    error: (err) => {
+                        console.error("Error fetching updated profile:", err);
+                    }
+                });
+            });
+        },
+        error: (err) => {
+            console.error("Error updating profile:", err);
+            alert("Failed to update profile. Please try again.");
         }
     });
 });
