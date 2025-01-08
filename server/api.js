@@ -42,11 +42,20 @@ app.post("/register-user", (req, res) => {
 
 // Get all providers (for login verification)
 app.get("/providers", (req, res) => {
-    mongoClient.connect(conString).then(clientObj => {
-        var db = clientObj.db("serviceHunt");
-        db.collection("providers").find({}).toArray().then(users => {
-            res.json(users);
-        });
+    mongoClient.connect(conString).then(async (clientObj) => {
+        try {
+            var db = clientObj.db("serviceHunt");
+            // Get data directly from providersInfo since it has all the card details
+            const providersInfo = await db.collection("providersInfo").find({}).toArray();
+            console.log("Providers info data:", providersInfo);
+            res.json(providersInfo);
+        } catch (error) {
+            console.error("Error fetching providers:", error);
+            res.status(500).json({ error: "Error fetching providers" });
+        }
+    }).catch(err => {
+        console.error("Database connection error:", err);
+        res.status(500).json({ error: "Database connection error" });
     });
 });
 
@@ -135,6 +144,40 @@ app.put("/edit-profile/:UserId", (req, res) => {
         res.status(500).json({ success: false, message: "Database connection error", error: err });
     });
 });
+
+// Get all providers info
+app.get("/providersInfo", (req, res) => {
+    mongoClient.connect(conString).then(clientObj => {
+        var db = clientObj.db("serviceHunt");
+        db.collection("providersInfo").find({}).toArray().then(profiles => {
+            console.log("Found profiles:", profiles);
+            res.json(profiles);
+        });
+    }).catch(err => {
+        console.error("Error fetching profiles:", err);
+        res.status(500).json({ error: "Database error" });
+    });
+});
+
+// Get all service providers info for dashboard
+app.get("/api/getAllProvidersInfo", (req, res) => {
+    mongoClient.connect(conString).then(clientObj => {
+        var db = clientObj.db("serviceHunt");
+        db.collection("providersInfo")
+            .find({})
+            .toArray()
+            .then(providersInfo => {
+                console.log("Service providers info:", providersInfo);
+                res.json(providersInfo);
+            })
+            .catch(err => {
+                console.error("Error getting providers info:", err);
+                res.status(500).json({ error: "Failed to get providers info" });
+            });
+    });
+});
+
+// Get profiles by location
 app.get("/get-profiles/:Location", (req, res) => {
     mongoClient.connect(conString).then(clientObj => {
         var db = clientObj.db("serviceHunt");
@@ -144,6 +187,7 @@ app.get("/get-profiles/:Location", (req, res) => {
         })
     })
 })
+
 app.listen(5500, () => {
     console.log("app is listening on http://localhost:5500");
 });

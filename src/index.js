@@ -94,6 +94,34 @@ const profileTemplate = (profile) =>
         </div>
     </div>`;
 
+// Service card template
+function generateServiceCard(provider) {
+    return `
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">${provider.UserName}</h5>
+                    <p class="card-text"><i class="fas fa-tools me-2"></i>Service: ${provider.Service}</p>
+                    <p class="card-text"><i class="fas fa-dollar-sign me-2"></i>Rate: ₹${provider.HourlyRate}/hr</p>
+                    <p class="card-text"><i class="fas fa-briefcase me-2"></i>Experience: ${provider.YearsOfExperience} years</p>
+                    <p class="card-text"><i class="fas fa-map-marker-alt me-2"></i>Location: ${provider.Location}</p>
+                    <p class="card-text"><i class="fas fa-phone me-2"></i>Contact: ${provider.MobileNumber}</p>
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    <button class="btn btn-info w-100" onclick="window.location.href='mailto:${provider.Email}'">
+                        <i class="fas fa-envelope me-2"></i>Contact via Email
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Function to handle contacting provider
+function contactProvider(email) {
+    window.location.href = `mailto:${email}`;
+}
+
 // Check if user is logged in
 if (userId) {
     loadView("../public/provider-dashboard.html", function () {
@@ -195,7 +223,7 @@ $(document).on("click", "#createBtn", (e) => {
         YearsOfExperience: $("#txtYearsOfExperience").val(),
         HourlyRate: $("#txtHourlyRate").val(),
         Service: $("#selServices").val(),
-        Location:$("#cityTextbox").val(),
+        Location: $("#cityTextbox").val(),
         UserId: $.cookie("userid")
     };
 
@@ -274,7 +302,7 @@ $(document).on("click", "#btnSave", () => {
         YearsOfExperience: $("#txtEditYearsOfExperience").val(),
         HourlyRate: $("#txtEditHourlyRate").val(),
         Service: $("#selServices").val(),
-        Location:$("#editCityTextbox").val(),
+        Location: $("#editCityTextbox").val(),
         UserId: parseInt(UserId)
     };
 
@@ -341,6 +369,73 @@ $(document).on("click", "#btnCancelEdit", () => {
         }
     });
 });
-$(document).on("click","#btnGuestUser",()=>{
-    loadView("../public/user-dashboard.html")
-})
+
+$(document).on("click", "#btnGuestUser", () => {
+    loadView("../public/user-dashboard.html", () => {
+        // Fetch service providers info with complete details
+        $.ajax({
+            url: "http://localhost:5500/providersInfo",
+            method: "get",
+            success: (providersInfo) => {
+                console.log("Received providers info:", providersInfo);
+                const servicesContainer = $("#servicesContainer");
+                servicesContainer.empty();
+                
+                if (providersInfo.length === 0) {
+                    servicesContainer.html('<div class="col-12 text-center"><p>No service providers available at the moment.</p></div>');
+                    return;
+                }
+                
+                // Generate and append cards for each provider
+                providersInfo.forEach(provider => {
+                    servicesContainer.append(generateServiceCard(provider));
+                });
+            },
+            error: (err) => {
+                console.error("Error fetching service providers:", err);
+                $("#servicesContainer").html('<div class="col-12 text-center"><p class="text-danger">Error loading service providers. Please try again later.</p></div>');
+            }
+        });
+    });
+});
+
+$(document).ready(function () {
+    $.ajax({
+        method: "get",
+        url: "http://localhost:5500/providers",
+        success: (providers) => {
+            console.log("Providers fetched:", providers);
+
+            // Ensure the container is initially empty
+            $("#servicesContainer").html('');
+
+            if (providers && providers.length > 0) {
+                providers.forEach((provider) => {
+                    var cardBody = `
+                        <div class="card shadow-sm border-0 mb-4" style="width: 18rem;">
+                            <div class="card-header bg-primary text-white py-3">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-user-circle me-2"></i>${provider.UserName}
+                                </h5>
+                            </div>
+                            <div class="card-body bg-light">
+                                <p class="card-text">Email: ${provider.Email || "Not Provided"}</p>
+                                <p class="card-text">Mobile: ${provider.Mobile || "Not Provided"}</p>
+                                <p class="card-text">Location: ${provider.Location || "Not Provided"}</p>
+                                <button class="btn btn-info">Contact</button>
+                            </div>
+                        </div>
+                    `;
+                    // Append each card to the services container
+                    $("#servicesContainer").append(cardBody);
+                });
+            } else {
+                $("#servicesContainer").html("<p>No providers found.</p>");
+            }
+        },
+        error: (err) => {
+            console.error("Error fetching providers:", err);
+            $("#servicesContainer").html("<p>Failed to load providers.</p>");
+        }
+    });
+});
