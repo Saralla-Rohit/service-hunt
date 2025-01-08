@@ -13,7 +13,7 @@ function loadView(url, callback) {
 const userId = $.cookie("userid");
 
 // Profile HTML template
-const profileTemplate = (profile) => 
+const profileTemplate = (profile) =>
     `<div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-primary text-white py-3">
             <h5 class="card-title mb-0">
@@ -85,7 +85,7 @@ const profileTemplate = (profile) =>
 
 // Check if user is logged in
 if (userId) {
-    loadView("../public/provider-dashboard.html", function() {
+    loadView("../public/provider-dashboard.html", function () {
         // Fetch the profile data and render it immediately
         $.ajax({
             method: "get",
@@ -112,7 +112,7 @@ $(document).on("click", "#btnServiceProvider", () => loadView("../public/auth.ht
 $(document).on("click", "#btnCreateAccount", () => loadView("../public/register.html"));
 $(document).on("click", "#btnSignin", () => loadView("../public/login.html"));
 $(document).on("click", "#btnCancel", () => loadView("../public/auth.html"));
-$(document).on("click", ".back", () => loadView("../public/index.html"));
+$(document).on("click", "#back", () => loadView("../public/home.html"));
 
 // Register handler
 $(document).on("click", "#btnRegister", () => {
@@ -199,7 +199,7 @@ $(document).on("click", "#createBtn", (e) => {
             $("#txtYearsOfExperience").val("");
             $("#txtHourlyRate").val("");
             $("#selServices").val("");
-            
+
             loadView("../public/provider-dashboard.html", () => {
                 $("#ProfileContainer").html(profileTemplate(profile));
             });
@@ -215,7 +215,7 @@ $(document).on("click", "#btnEdit", (e) => {
         alert("User ID not found. Please try logging in again.");
         return;
     }
-    
+
     loadView("../public/edit-profile.html");
 
     $.ajax({
@@ -246,7 +246,7 @@ $(document).on("click", "#btnEdit", (e) => {
 $(document).on("click", "#btnSave", () => {
     const UserId = $.cookie("userid");
     console.log("Save clicked, UserId from cookie:", UserId);
-    
+
     if (!UserId) {
         console.error("No UserId found");
         alert("User ID not found. Please try logging in again.");
@@ -262,7 +262,7 @@ $(document).on("click", "#btnSave", () => {
         Service: $("#selServices").val(),
         UserId: parseInt(UserId)
     };
-    
+
     console.log("Sending profile data:", profile);
 
     $.ajax({
@@ -305,5 +305,27 @@ $(document).on("click", "#btnSave", () => {
 });
 
 $(document).on("click", "#btnCancelEdit", () => {
-    loadView("../public/provider-dashboard.html");
+    loadView("../public/provider-dashboard.html", () => {
+        const userId = $.cookie("userid");
+        if (userId) {
+            $.ajax({
+                method: "get",
+                url: `http://localhost:5500/get-profile/${userId}`,
+                success: (profile) => {
+                    if (profile) {
+                        $("#ProfileContainer").html(profileTemplate(profile));
+                    } else {
+                        console.log("No profile found");
+                        $("#ProfileContainer").html("<p>No profile found. Please create your profile.</p>");
+                    }
+                },
+                error: (err) => {
+                    console.error("Error fetching profile:", err);
+                }
+            });
+        }
+    });
 });
+$(document).on("click","#btnGuestUser",()=>{
+    loadView("../public/user-location.html")
+})

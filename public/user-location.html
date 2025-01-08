@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City from IP</title>
+    <!-- Bootstrap CDN -->
+</head>
+<body class="bg-dark text-white"> <!-- Assuming dark background styling here -->
+
+    <div class="container text-center p-4 bg-dark rounded shadow"> <!-- Centered container with Bootstrap classes -->
+        <h2 class="text-white">Get City from IP</h2>
+        <div class="mb-3">
+            <!-- Button to fetch city -->
+            <button id="getCityButton" class="btn btn-primary">Get City from IP</button>
+        </div>
+        <div class="mb-3">
+            <!-- Textbox to display the city -->
+            <input type="text" id="cityTextbox" class="form-control" placeholder="City will appear here" readonly>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS & Popper -->
+
+    <script>
+        // Function to get the city from IP
+        function getCityFromIP() {
+            fetch('http://ip-api.com/json')
+                .then(response => response.json())
+                .then(data => {
+                    const city = data.city;
+                    console.log("City from IP: " + city);
+                    // Insert city into textbox
+                    document.getElementById("cityTextbox").value = city;
+                })
+                .catch(error => {
+                    console.log("Error fetching city data: " + error);
+                    alert("Unable to fetch city data.");
+                });
+        }
+
+        // Add event listener to the button
+        document.getElementById("getCityButton").addEventListener("click", getCityFromIP);
+    </script>
+</body>
+</html>
