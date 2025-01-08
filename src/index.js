@@ -342,5 +342,5 @@ $(document).on("click", "#btnCancelEdit", () => {
     });
 });
 $(document).on("click","#btnGuestUser",()=>{
-    loadView("../public/user-location.html")
+    loadView("../public/user-dashboard.html")
 })
