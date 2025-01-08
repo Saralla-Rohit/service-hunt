@@ -13,6 +13,7 @@ function loadView(url, callback) {
 const userId = $.cookie("userid");
 
 // Profile HTML template
+// Profile HTML template with added Location field
 const profileTemplate = (profile) =>
     `<div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-primary text-white py-3">
@@ -73,6 +74,16 @@ const profileTemplate = (profile) =>
                         <div>
                             <small class="text-muted">Service</small>
                             <p class="mb-0 fw-bold">${profile.Service}</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Added Location field -->
+                <div class="col-md-6 mb-3">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                        <div>
+                            <small class="text-muted">Location</small>
+                            <p class="mb-0 fw-bold">${profile.Location || "Not Provided"}</p>
                         </div>
                     </div>
                 </div>
@@ -184,6 +195,7 @@ $(document).on("click", "#createBtn", (e) => {
         YearsOfExperience: $("#txtYearsOfExperience").val(),
         HourlyRate: $("#txtHourlyRate").val(),
         Service: $("#selServices").val(),
+        Location:$("#cityTextbox").val(),
         UserId: $.cookie("userid")
     };
 
@@ -198,6 +210,7 @@ $(document).on("click", "#createBtn", (e) => {
             $("#txtMobileNumber").val("");
             $("#txtYearsOfExperience").val("");
             $("#txtHourlyRate").val("");
+            $("#cityTextbox").val();
             $("#selServices").val("");
 
             loadView("../public/provider-dashboard.html", () => {
@@ -231,6 +244,7 @@ $(document).on("click", "#btnEdit", (e) => {
                 $("#txtEditYearsOfExperience").val(profile.YearsOfExperience);
                 $("#txtEditHourlyRate").val(profile.HourlyRate);
                 $("#selServices").val(profile.Service);
+                $("#editCityTextbox").val(profile.Location);
             } else {
                 console.log("No profile found");
                 alert("Profile not found");
@@ -260,6 +274,7 @@ $(document).on("click", "#btnSave", () => {
         YearsOfExperience: $("#txtEditYearsOfExperience").val(),
         HourlyRate: $("#txtEditHourlyRate").val(),
         Service: $("#selServices").val(),
+        Location:$("#editCityTextbox").val(),
         UserId: parseInt(UserId)
     };
 

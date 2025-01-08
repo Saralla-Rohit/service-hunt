@@ -59,7 +59,8 @@ app.post("/create-profile", (req, res) => {
         YearsOfExperience: parseInt(req.body.YearsOfExperience),
         HourlyRate: parseInt(req.body.HourlyRate),
         Service: req.body.Service,
-        UserId: parseInt(req.body.UserId)
+        Location: req.body.Location,
+        UserId: parseInt(req.body.UserId),
     };
     mongoClient.connect(conString).then(clientObj => {
         clientObj.db("serviceHunt").collection("providersInfo").insertOne(profile).then(() => {
@@ -97,7 +98,7 @@ app.get("/get-profile/:UserId", (req, res) => {
 app.put("/edit-profile/:UserId", (req, res) => {
     console.log("Received edit profile request for UserId:", req.params.UserId);
     console.log("Request body:", req.body);
-    
+
     var profile = {
         UserName: req.body.UserName,
         Email: req.body.Email,
@@ -105,9 +106,10 @@ app.put("/edit-profile/:UserId", (req, res) => {
         YearsOfExperience: parseInt(req.body.YearsOfExperience),
         HourlyRate: parseInt(req.body.HourlyRate),
         Service: req.body.Service,
+        Location: req.body.Location,
         UserId: parseInt(req.params.UserId)
     };
-    
+
     console.log("Processed profile data:", profile);
 
     mongoClient.connect(conString).then(clientObj => {
@@ -133,7 +135,15 @@ app.put("/edit-profile/:UserId", (req, res) => {
         res.status(500).json({ success: false, message: "Database connection error", error: err });
     });
 });
-
+app.get("/get-profiles/:Location", (req, res) => {
+    mongoClient.connect(conString).then(clientObj => {
+        var db = clientObj.db("serviceHunt");
+        db.collection("providersInfo").find({ Location: req.params.Location }).toArray().then(profile => {
+            res.json(profile)
+            console.log(profile)
+        })
+    })
+})
 app.listen(5500, () => {
     console.log("app is listening on http://localhost:5500");
 });

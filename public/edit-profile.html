@@ -4,15 +4,15 @@
         <dl class="professional-form">
             <!-- Full Name Field -->
             <dt>Full Name</dt>
-            <dd><input type="text" class="form-control" id="txtEditName"></dd>
+            <dd><input type="text" class="form-control" id="txtEditName" placeholder="Enter Full Name"></dd>
 
             <!-- Email Field -->
             <dt>Email</dt>
-            <dd><input type="email" class="form-control" id="txtEditEmail"></dd>
+            <dd><input type="email" class="form-control" id="txtEditEmail" placeholder="Enter Email Id"></dd>
 
             <!-- Mobile Number Field -->
             <dt>Mobile Number</dt>
-            <dd><input type="tel" class="form-control" id="txtEditMobileNumber"></dd>
+            <dd><input type="tel" class="form-control" id="txtEditMobileNumber" placeholder="Enter Mobile Number"></dd>
 
             <!-- Grouping Years of Experience and Hourly Rate in a single row -->
             <dt>Experience & Hourly Rate</dt>
@@ -28,6 +28,8 @@
             <dt>Services Provided</dt>
             <dd>
                 <select class="form-control" id="selServices">
+                    <option value="" disabled selected>Select Service</option>
+
                     <option value="Plumber">Plumber</option>
                     <option value="Electrician">Electrician</option>
                     <option value="Tutor">Tutor</option>
@@ -40,6 +42,13 @@
                     <option value="Vet">Vet</option>
                 </select>
             </dd>
+
+            <!-- Location Field in Same Row as Button -->
+            <dt>Location</dt>
+            <dd class="d-flex align-items-center input-group">
+                <input type="text" class="form-control" id="editCityTextbox" placeholder="Location where Services can be provided">
+                <button type="button" id="getEditCityButton" class="btn btn-info">Get City</button>
+            </dd>
         </dl>
 
         <div class="button-group">
@@ -51,3 +60,24 @@
         </div>
     </div>
 </div>
+
+<script>
+// Function to get the city from IP (for Edit Profile)
+function getCityFromIP() {
+    fetch('http://ip-api.com/json')
+        .then(response => response.json())
+        .then(data => {
+            const city = data.city;
+            console.log("City from IP: " + city);
+            // Insert city into the "Location" textbox
+            document.getElementById("editCityTextbox").value = city;
+        })
+        .catch(error => {
+            console.log("Error fetching city data: " + error);
+            alert("Unable to fetch city data.");
+        });
+}
+
+// Add event listener to the "Get City" button in the Edit Profile form
+document.getElementById("getEditCityButton").addEventListener("click", getCityFromIP);
+</script>

@@ -4,15 +4,15 @@
         <dl class="professional-form">
             <!-- Name Field -->
             <dt>Full Name</dt>
-            <dd><input type="text" class="form-control " id="txtName"></dd>
+            <dd><input type="text" class="form-control" id="txtName" placeholder="Enter Full Name"></dd>
 
             <!-- Email Field -->
             <dt>Email</dt>
-            <dd><input type="email" class="form-control " id="txtEmail"></dd>
+            <dd><input type="email" class="form-control" id="txtEmail" placeholder="Enter Email Id"></dd>
 
             <!-- Mobile Number Field -->
             <dt>Mobile Number</dt>
-            <dd><input type="tel" class="form-control " id="txtMobileNumber"></dd>
+            <dd><input type="tel" class="form-control" id="txtMobileNumber" placeholder="Enter Mobile Number"></dd>
 
             <!-- Grouping Years of Experience and Hourly Rate in a single row -->
             <dt>Experience & Hourly Rate</dt>
@@ -27,7 +27,9 @@
             <!-- Services Provided (Multi-select dropdown) -->
             <dt>Services Provided</dt>
             <dd>
-                <select class="form-control " id="selServices">
+                <select class="form-control" id="selServices">
+                    <!-- Placeholder option -->
+                    <option value="" disabled selected>Select Service</option>
                     <!-- Available services for selection -->
                     <option value="Plumber">Plumber</option>
                     <option value="Electrician">Electrician</option>
@@ -42,15 +44,41 @@
                 </select>
             </dd>
 
-      
+            <!-- Location Field in Same Row as Button -->
+            <dt>Location</dt>
+            <dd class="d-flex align-items-center input-group">
+                <input type="text" class="form-control" id="cityTextbox" placeholder="Location where Services can be provided">
+                <button type="button" id="getCityButton" class="btn btn-info">Get City</button>
+            </dd>
         </dl>
 
         <div class="button-group">
-       `     <!-- Button to add the professional details -->
-            <button type="button"  id="createBtn" class="btn btn-primary w-100">Add Professional</button>
+            <!-- Button to add the professional details -->
+            <button type="button" id="createBtn" class="btn btn-primary w-100">Add Professional</button>
             
             <!-- Button to cancel the action and reset the form -->
             <button type="button" id="btnCancelCreate" class="btn btn-danger w-100 mt-2">Cancel</button>
         </div>
     </div>
 </div>
+
+<script>
+// Function to get the city from IP
+function getCityFromIP() {
+    fetch('http://ip-api.com/json')
+        .then(response => response.json())
+        .then(data => {
+            const city = data.city;
+            console.log("City from IP: " + city);
+            // Insert city into textbox
+            document.getElementById("cityTextbox").value = city;
+        })
+        .catch(error => {
+            console.log("Error fetching city data: " + error);
+            alert("Unable to fetch city data.");
+        });
+}
+
+// Add event listener to the "Get City" button
+document.getElementById("getCityButton").addEventListener("click", getCityFromIP);
+</script>
