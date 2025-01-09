@@ -4,17 +4,14 @@
         <div class="col-3">
             <div class="container bg-light p-3 text-dark">
                 <h4>Filter Services</h4>
-
-                <!-- Hourly Rate Filter -->
+                <!-- Existing Filters -->
                 <div class="mb-3">
                     <label for="hourlyRate" class="form-label"><strong>Hourly Rate</strong></label>
                     <label for="" id="currentHourlyRate"></label>
-                    <input type="range" class="form-range" id="hourlyRate" min="500" max="5000" step="1000" value="500">
+                    <input type="range" class="form-range" id="hourlyRate" min="500" max="2000" step="100" value="500">
                     <span id="hourlyRateValue">500</span>
-                    <span class="float-end">5000</span>
+                    <span class="float-end">2000</span>
                 </div>
-
-                <!-- Select Service Filter -->
                 <div class="mb-3">
                     <label for="serviceSelect" class="form-label"><strong>Services</strong></label>
                     <select class="form-select" id="serviceSelect">
@@ -31,40 +28,38 @@
                         <option value="Vet">Vet</option>
                     </select>
                 </div>
-
-                <!-- Years of Experience Filter -->
                 <div class="mb-3">
                     <label for="yearsOfExperience" class="form-label"><strong>Years of Experience</strong></label>
-                    <input type="number" class="form-control" id="yearsOfExperience"
-                        placeholder="Minimum Years of Experience">
+                    <input type="number" class="form-control" id="yearsOfExperience" placeholder="Minimum Years of Experience">
                 </div>
-
-                <!-- Apply Filters Button -->
                 <button class="btn btn-primary w-100" id="btnApplyFilters">Apply Filters</button>
             </div>
         </div>
 
         <!-- Right Side: Service Provider Cards -->
-        <div class="col-9">
+        <div class="col-9"> 
             <div class="bg-light p-2 rounded shadow-sm h-100">
                 <!-- Dashboard Header -->
                 <h5 class="d-flex justify-content-between align-items-center mb-4 mt-4">
-                    <!-- Location Input and Button -->
+                    <!-- Location Input and Buttons -->
                     <div class="d-flex w-100 input-group">
                         <input type="text" id="locationInput" class="form-control" placeholder="Enter location" />
-                        <button class="btn btn-primary h-100" id="btnFilterByLocation">Get Current Location</button>
+                        <button class="btn btn-primary h-100" id="btnLocation">Get Current Location</button>
+                        <!-- New Filter by Location Button -->
                     </div>
+                    <button class="btn btn-secondary h-100 ms-2" id="filterByLocationBtn">Filter by Location</button>
                 </h5>
-
+        
                 <!-- Service Cards Container -->
-                <div id="servicesContainer" class="d-flex flex-wrap justify-content-start"
-                    style="max-height: 550px; overflow-y: auto;">
+                <div id="servicesContainer" class="d-flex flex-wrap justify-content-start" style="max-height: 550px; overflow-y: auto;">
                     <!-- Dynamic service provider cards will be inserted here -->
                 </div>
             </div>
         </div>
+        
     </div>
 </div>
+
 
 <script>
     // Function to get the city from IP (for Edit Profile)
@@ -84,5 +79,6 @@
     }
 
     // Add event listener to the "Get City" button in the Edit Profile form
-    document.getElementById("btnFilterByLocation").addEventListener("click", getCityFromIP);
+    document.getElementById("btnLocation").addEventListener("click", getCityFromIP);
 </script>
+<script src="../src/serviceFilters.js"></script>

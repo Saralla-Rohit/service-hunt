@@ -97,7 +97,7 @@ const profileTemplate = (profile) =>
 // Service card template
 function generateServiceCard(provider) {
     return `
-        <div class="col-lg-4 col-md-6 mb-4">
+        <div class="col-lg-4 col-md-6 mb-3 ms-0.5">
             <div class="card h-100 shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">${provider.UserName}</h5>
@@ -109,7 +109,7 @@ function generateServiceCard(provider) {
                 </div>
                 <div class="card-footer bg-transparent border-top-0">
                     <button class="btn btn-info w-100" onclick="window.location.href='mailto:${provider.Email}'">
-                        <i class="fas fa-envelope me-2"></i>Contact via Email
+                        <i class="fas fa-envelope me-2"></i>View Info 
                     </button>
                 </div>
             </div>
@@ -397,6 +397,122 @@ $(document).on("click", "#btnGuestUser", () => {
             }
         });
     });
+});
+
+// Store the current filters
+let currentFilters = {
+    location: '',
+    service: '',
+    experience: 0,
+    hourlyRate: 500
+};
+
+// Function to apply all filters
+function applyFilters() {
+    $.ajax({
+        url: "http://localhost:5500/providersInfo",
+        method: "get",
+        success: function(providers) {
+            let filteredProviders = providers;
+
+            // Apply location filter
+            if (currentFilters.location) {
+                filteredProviders = filteredProviders.filter(provider => 
+                    provider.Location === currentFilters.location
+                );
+            }
+
+            // Apply service filter
+            if (currentFilters.service) {
+                filteredProviders = filteredProviders.filter(provider => 
+                    provider.Service === currentFilters.service
+                );
+            }
+
+            // Apply experience filter
+            if (currentFilters.experience > 0) {
+                filteredProviders = filteredProviders.filter(provider => 
+                    provider.YearsOfExperience >= currentFilters.experience
+                );
+            }
+
+            // Apply hourly rate filter
+            if (currentFilters.hourlyRate > 500) {
+                filteredProviders = filteredProviders.filter(provider => 
+                    provider.HourlyRate <= currentFilters.hourlyRate
+                );
+            }
+
+            // Update UI with filtered results
+            $("#servicesContainer").empty();
+            
+            if (filteredProviders.length === 0) {
+                $("#servicesContainer").append('<p>No service providers found matching all criteria.</p>');
+            } else {
+                filteredProviders.forEach(provider => {
+                    $("#servicesContainer").append(generateServiceCard(provider));
+                });
+            }
+        },
+        error: function(err) {
+            console.error("Error fetching providers:", err);
+            $("#servicesContainer").html('<p class="text-danger">Error loading service providers. Please try again.</p>');
+        }
+    });
+}
+
+// Service filter handler
+$(document).on("change", "#serviceSelect", function() {
+    currentFilters.service = $(this).val();
+    applyFilters();
+});
+
+// Years of Experience filter handler
+$(document).on("change", "#yearsOfExperience", function() {
+    currentFilters.experience = parseInt($(this).val()) || 0;
+    $("#currentExperience").text(`Selected Range: ${currentFilters.experience}+ years`);
+    applyFilters();
+});
+
+// Hourly Rate filter handler
+$(document).on("change", "#hourlyRate", function() {
+    currentFilters.hourlyRate = parseInt($(this).val()) || 500;
+    $("#priceRangeText").text(`Price Range: ₹${currentFilters.hourlyRate}`);
+    applyFilters();
+});
+
+// Location filter handler
+$(document).on("click", "#filterByLocationBtn", () => {
+    const locationValue = $('#locationInput').val();
+
+    if (!locationValue) {
+        alert("Please enter a location to filter by.");
+        return;
+    }
+
+    currentFilters.location = locationValue;
+    applyFilters();
+});
+
+// Reset filters
+$(document).on("click", "#resetFilters", () => {
+    currentFilters = {
+        location: '',
+        service: '',
+        experience: 0,
+        hourlyRate: 500
+    };
+    
+    // Reset UI
+    $("#serviceSelect").val('');
+    $("#locationInput").val('');
+    $("#yearsOfExperience").val('');
+    $("#hourlyRate").val('500');
+    $("#currentExperience").text('Selected Range: 0+ years');
+    $("#priceRangeText").text('Price Range: ₹500');
+    
+    // Show all providers
+    applyFilters();
 });
 
 $(document).ready(function () {

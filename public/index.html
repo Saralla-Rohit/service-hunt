@@ -19,14 +19,26 @@
 
     <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
     <!-- Custom JavaScript (Your custom script should be loaded after jQuery and Bootstrap) -->
-
     <script src="../src/index.js" defer></script>
+    <script src="../src/filterServices.js"></script>
     <!-- <script src="../src/filter.js" defer></script> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <div class="shade">
         <section>
+            <div class="filter-section mb-3">
+                <div class="form-group">
+                    <label for="yearsOfExperience">Years of Experience:</label>
+                    <input type="range" class="form-control" id="yearsOfExperience" min="0" max="20" value="0">
+                </div>
+                <div class="form-group mt-3">
+                    <label for="hourlyRate">Hourly Rate (₹):</label>
+                    <input type="range" class="form-control" id="hourlyRate" min="500" max="2000" step="100" value="500">
+                    <p id="priceRangeText" style="margin-top: 10px;">Price Range: ₹500</p>
+                </div>
+                <button id="resetFilters" class="btn btn-secondary mt-2">Reset Filters</button>
+            </div>
             <!-- Your HTML content goes here -->
         </section>
     </div>

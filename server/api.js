@@ -45,10 +45,10 @@ app.get("/providers", (req, res) => {
     mongoClient.connect(conString).then(async (clientObj) => {
         try {
             var db = clientObj.db("serviceHunt");
-            // Get data directly from providersInfo since it has all the card details
-            const providersInfo = await db.collection("providersInfo").find({}).toArray();
-            console.log("Providers info data:", providersInfo);
-            res.json(providersInfo);
+            // Get data from providers collection where user credentials are stored
+            const providers = await db.collection("providers").find({}).toArray();
+            console.log("Providers data:", providers);
+            res.json(providers);
         } catch (error) {
             console.error("Error fetching providers:", error);
             res.status(500).json({ error: "Error fetching providers" });
@@ -188,6 +188,40 @@ app.get("/get-profiles/:Location", (req, res) => {
     })
 })
 
+// Get filtered providers based on service and location
+app.get("/get-filtered-providers", (req, res) => {
+    const { service, location } = req.query;
+
+    let filter = {};
+
+    // Apply service filter if provided
+    if (service) {
+        filter.Service = service;
+    }
+
+    // Apply location filter if provided
+    if (location) {
+        filter.Location = location;
+    }
+
+    // Connect to MongoDB and fetch the filtered providers
+    mongoClient.connect(conString).then(clientObj => {
+        var db = clientObj.db("serviceHunt");
+        db.collection("providersInfo")
+            .find(filter)
+            .toArray()
+            .then(providers => {
+                res.json(providers);
+            })
+            .catch(err => {
+                res.status(500).send("Error fetching providers: " + err.message);
+            });
+    }).catch(err => {
+        res.status(500).send("Database connection error: " + err.message);
+    });
+});
+
 app.listen(5500, () => {
     console.log("app is listening on http://localhost:5500");
 });
+//locationInput
