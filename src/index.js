@@ -384,17 +384,17 @@ $(document).on("click", "#btnGuestUser", () => {
                 providersInfo.forEach(provider => {
                     servicesContainer.append(`
                         <div class="col-lg-4 col-md-6 mb-3 ms-0.5">
-                            <div class="card h-100 shadow-sm">
+                            <div class="card h-100 shadow-sm provider-card" onclick="showProviderDetails(${JSON.stringify(provider).replace(/"/g, '&quot;')})">
                                 <div class="card-body">
                                     <h5 class="card-title">${provider.UserName}</h5>
                                     <p class="card-text"><i class="fas fa-tools me-2"></i>Service: ${provider.Service}</p>
                                     <p class="card-text"><i class="fas fa-dollar-sign me-2"></i>Rate: ₹${provider.HourlyRate}/hr</p>
                                     <p class="card-text"><i class="fas fa-briefcase me-2"></i>Experience: ${provider.YearsOfExperience} years</p>
-                                    <p class="card-text"><i class="fas fa-map-marker-alt me-2"></i>Location: ${provider.Location}</p>
+                                    <p class="card-text"><i class="fas fa-map-marker-alt me-2"></i>Location: ${provider.Location || 'Not specified'}</p>
                                 </div>
                                 <div class="card-footer bg-transparent border-top-0">
-                                    <button class="btn btn-info w-100" onclick="window.location.href='mailto:${provider.Email}'">
-                                        <i class="fas fa-envelope me-2"></i>View Info 
+                                    <button class="btn btn-info w-100">
+                                        <i class="fas fa-info-circle me-2"></i>View Details
                                     </button>
                                 </div>
                             </div>
@@ -404,138 +404,14 @@ $(document).on("click", "#btnGuestUser", () => {
             },
             error: (err) => {
                 console.error("Error fetching service providers:", err);
-                $("#servicesContainer").html('<div class="col-12 text-center"><p class="text-danger">Error loading service providers. Please try again later.</p></div>');
+                $("#servicesContainer").html('<div class="col-12 text-center"><p class="text-danger">Error loading service providers. Please try again.</p></div>');
             }
         });
     });
 });
 
-// Store the current filters
-let currentFilters = {
-    location: '',
-    service: '',
-    experience: 0,
-    hourlyRate: 500
-};
+// Book service button handler
 
-// Function to apply all filters
-function applyFilters() {
-    $.ajax({
-        url: "http://localhost:5500/providersInfo",
-        method: "get",
-        success: function(providers) {
-            let filteredProviders = providers;
-
-            // Apply location filter
-            if (currentFilters.location) {
-                filteredProviders = filteredProviders.filter(provider => 
-                    provider.Location === currentFilters.location
-                );
-            }
-
-            // Apply service filter
-            if (currentFilters.service) {
-                filteredProviders = filteredProviders.filter(provider => 
-                    provider.Service === currentFilters.service
-                );
-            }
-
-            // Apply experience filter
-            if (currentFilters.experience > 0) {
-                filteredProviders = filteredProviders.filter(provider => 
-                    provider.YearsOfExperience >= currentFilters.experience
-                );
-            }
-
-            // Apply hourly rate filter
-            if (currentFilters.hourlyRate > 500) {
-                filteredProviders = filteredProviders.filter(provider => 
-                    provider.HourlyRate <= currentFilters.hourlyRate
-                );
-            }
-
-            // Update UI with filtered results
-            $("#servicesContainer").empty();
-            
-            if (filteredProviders.length === 0) {
-                $("#servicesContainer").append('<p>No service providers found matching all criteria.</p>');
-            } else {
-                filteredProviders.forEach(provider => {
-                    $("#servicesContainer").append(`
-                        <div class="col-lg-4 col-md-6 mb-3 ms-0.5">
-                            <div class="card h-100 shadow-sm">
-                                <div class="card-body">
-                                    <h5 class="card-title">${provider.UserName}</h5>
-                                    <p class="card-text"><i class="fas fa-tools me-2"></i>Service: ${provider.Service}</p>
-                                    <p class="card-text"><i class="fas fa-dollar-sign me-2"></i>Rate: ₹${provider.HourlyRate}/hr</p>
-                                    <p class="card-text"><i class="fas fa-briefcase me-2"></i>Experience: ${provider.YearsOfExperience} years</p>
-                                    <p class="card-text"><i class="fas fa-map-marker-alt me-2"></i>Location: ${provider.Location}</p>
-                                </div>
-                                <div class="card-footer bg-transparent border-top-0">
-                                    <button class="btn btn-info w-100" onclick="window.location.href='mailto:${provider.Email}'">
-                                        <i class="fas fa-envelope me-2"></i>View Info 
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `);
-                });
-            }
-        },
-        error: function(err) {
-            console.error("Error fetching providers:", err);
-            $("#servicesContainer").html('<p class="text-danger">Error loading service providers. Please try again.</p>');
-        }
-    });
-}
-
-// Service filter handler
-$(document).on("change", "#serviceSelect", function() {
-    currentFilters.service = $(this).val();
-    applyFilters();
-});
-
-// Years of Experience filter handler
-$(document).on("change", "#yearsOfExperience", function() {
-    currentFilters.experience = parseInt($(this).val()) || 0;
-    $("#currentExperience").text(`Selected Range: ${currentFilters.experience}+ years`);
-    applyFilters();
-});
-
-// Hourly Rate filter handler
-$(document).on("input", "#hourlyRate", function() {
-    const price = $(this).val();
-    $('#currentHourlyRate').text(`Price: ₹${price}`);
-    currentFilters.hourlyRate = parseInt($(this).val()) || 500;
-    applyFilters();
-});
-
-// Location filter handler
-$(document).on("click", "#filterByLocationBtn", () => {
-    const locationValue = $('#locationInput').val();
-
-    if (!locationValue) {
-        alert("Please enter a location to filter by.");
-        return;
-    }
-
-    currentFilters.location = locationValue;
-    applyFilters();
-});
-
-// Reset filters
-$(document).on("click", "#resetFilters", () => {
-    $('#hourlyRate').val(500);
-    $('#yearsOfExperience').val(0);
-    $('#currentHourlyRate').text('Price: ₹500');
-    currentFilters = {
-        location: '',
-        service: '',
-        experience: 0,
-        hourlyRate: 500
-    };
-    applyFilters();
-});
 
 $(document).on("keyup", "#txtRUserId", (e) => {
     console.log("User Id Typed: ", e.target.value);
@@ -549,15 +425,165 @@ $(document).on("keyup", "#txtRUserId", (e) => {
                 if (user.UserId == e.target.value) {
                     $("#lblUserIdError")
                         .html("User Id already exist - try another")
-                        .addClass("text-danger")
-                    break
+                        .addClass("text-danger");
+                    break;
                 } else {
                     $("#lblUserIdError")
-                    .html("User Id available")
-                    .removeClass("text-danger")
-                    .addClass("text-success")
+                        .html("User Id available")
+                        .removeClass("text-danger")
+                        .addClass("text-success");
                 }
             }
         }
-    })
-})
+    });
+});
+
+// Function to show provider details
+function showProviderDetails(provider) {
+    const modal = new bootstrap.Modal(document.getElementById('serviceProviderModal'));
+    
+    // Update modal content
+    document.getElementById('providerName').textContent = provider.UserName;
+    document.getElementById('providerService').textContent = provider.Service;
+    document.getElementById('providerExperience').textContent = provider.YearsOfExperience;
+    document.getElementById('providerRate').textContent = provider.HourlyRate;
+    document.getElementById('providerLocation').textContent = provider.Location || 'Not specified';
+    document.getElementById('providerContact').textContent = provider.MobileNumber || 'Not available';
+    document.getElementById('providerEmail').textContent = provider.Email;
+    
+    modal.show();
+}
+
+let allProviders = [];
+let currentProviders = [];
+
+// Filter Handlers
+$(document).on("change", "#serviceSelect", function() {
+    currentFilters.service = $(this).val();
+    applyFilters();
+});
+
+$(document).on("change", "#yearsOfExperience", function() {
+    currentFilters.experience = parseInt($(this).val()) || 0;
+    $("#currentExperience").text(`Selected Range: ${currentFilters.experience}+ years`);
+    applyFilters();
+});
+
+$(document).on("input", "#hourlyRate", function() {
+    const price = $(this).val();
+    $('#currentHourlyRate').text(`Price: ₹${price}`);
+    currentFilters.hourlyRate = parseInt($(this).val()) || 500;
+    applyFilters();
+});
+
+$(document).on("click", "#filterByLocationBtn", () => {
+    const locationValue = $('#locationInput').val();
+    if (!locationValue) {
+        alert("Please enter a location to filter by.");
+        return;
+    }
+    $.ajax({
+        url: "http://localhost:5500/get-profiles/" + locationValue,
+        method: "get",
+        success: function(providers) {
+            currentProviders = providers;
+            if (currentFilters.service || currentFilters.hourlyRate || currentFilters.experience) {
+                applyFilters();
+            } else {
+                displayProviders(providers);
+            }
+        },
+        error: function(err) {
+            console.error("Error fetching providers by location:", err);
+            $("#servicesContainer").html('<div class="col-12 text-center"><p class="text-danger">Error loading service providers. Please try again.</p></div>');
+        }
+    });
+});
+
+// Reset filters
+$(document).on("click", "#resetFilters", () => {
+    $('#hourlyRate').val(500);
+    $('#yearsOfExperience').val(0);
+    $('#currentHourlyRate').text('Price: ₹500');
+    $('#locationInput').val('');
+    $('#serviceSelect').val('');
+    currentFilters = {
+        service: '',
+        location: '',
+        experience: 0,
+        hourlyRate: 500
+    };
+    currentProviders = allProviders;
+    displayProviders(currentProviders);
+});
+
+function loadProviders() {
+    $.ajax({
+        url: "http://localhost:5500/providersInfo",
+        method: "get",
+        success: function(providers) {
+            allProviders = providers;
+            currentProviders = providers;
+            displayProviders(currentProviders);
+        },
+        error: function(err) {
+            console.error("Error fetching providers:", err);
+            $("#servicesContainer").html('<div class="col-12 text-center"><p class="text-danger">Error loading service providers. Please try again.</p></div>');
+        }
+    });
+}
+
+// Function to apply all filters
+function applyFilters() {
+    const filteredProviders = currentProviders.filter(provider => {
+        if (currentFilters.hourlyRate && provider.HourlyRate > currentFilters.hourlyRate) return false;
+        if (currentFilters.service && provider.Service !== currentFilters.service) return false;
+        if (currentFilters.experience && provider.YearsOfExperience < currentFilters.experience) return false;
+        return true;
+    });
+
+    displayProviders(filteredProviders);
+}
+
+function displayProviders(providers) {
+    const servicesContainer = $("#servicesContainer");
+    servicesContainer.empty();
+
+    if (providers.length === 0) {
+        servicesContainer.html('<div class="col-12 text-center"><p>No service providers found matching your criteria.</p></div>');
+    } else {
+        providers.forEach(provider => {
+            servicesContainer.append(`
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm provider-card" onclick="showProviderDetails(${JSON.stringify(provider).replace(/"/g, '&quot;')})">
+                        <div class="card-body">
+                            <h5 class="card-title">${provider.UserName}</h5>
+                            <p class="card-text"><i class="fas fa-tools me-2"></i>Service: ${provider.Service}</p>
+                            <p class="card-text"><i class="fas fa-dollar-sign me-2"></i>Rate: ₹${provider.HourlyRate}/hr</p>
+                            <p class="card-text"><i class="fas fa-briefcase me-2"></i>Experience: ${provider.YearsOfExperience} years</p>
+                            <p class="card-text"><i class="fas fa-map-marker-alt me-2"></i>Location: ${provider.Location || 'Not specified'}</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <button class="btn btn-info w-100">
+                                <i class="fas fa-info-circle me-2"></i>View Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `);
+        });
+    }
+}
+
+// Initial load
+$(document).ready(function() {
+    loadProviders();
+});
+
+// Store the current filters
+let currentFilters = {
+    hourlyRate: 500,
+    service: '',
+    experience: 0,
+    location: ''
+};

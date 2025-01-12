@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard - Service Hunt</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container-fluid">
@@ -56,8 +55,8 @@
                         <div class="d-flex w-100 input-group">
                             <input type="text" id="locationInput" class="form-control" placeholder="Enter location" />
                             <button class="btn btn-primary h-100" id="btnLocation">Get Current Location</button>
-                            <button class="btn btn-secondary h-100 ms-2" id="filterByLocationBtn">Filter by Location</button>
                         </div>
+                        <button class="btn btn-secondary h-100 ms-2" id="filterByLocationBtn">Filter by Location</button>
                     </h5>
             
                     <!-- Service Cards Container -->
@@ -69,39 +68,31 @@
         </div>
     </div>
 
-    <!-- Service Provider Details Modal -->
-    <div class="modal fade" id="serviceProviderModal" tabindex="-1" aria-labelledby="serviceProviderModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+    <!-- Modal Structure -->
+    <div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="serviceProviderModalLabel">Service Provider Details</h5>
+                    <h5 class="modal-title" id="locationModalLabel">Location Filter</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <h4 id="providerName"></h4>
-                            <p><strong>Service:</strong> <span id="providerService"></span></p>
-                            <p><strong>Experience:</strong> <span id="providerExperience"></span> years</p>
-                            <p><strong>Hourly Rate:</strong> ₹<span id="providerRate"></span></p>
-                            <p><strong>Location:</strong> <span id="providerLocation"></span></p>
-                            <p><strong>Contact:</strong> <span id="providerContact"></span></p>
-                            <p><strong>Email:</strong> <span id="providerEmail"></span></p>
-                        </div>
+                    <div class="mb-3">
+                        <label for="modalLocationInput" class="form-label">Enter Location</label>
+                        <input type="text" class="form-control" id="modalLocationInput">
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="bookService">Book Service</button>
+                    <button type="button" class="btn btn-primary" id="applyLocationFilter">Apply Filter</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
     <script>
         // Function to get the city from IP
@@ -123,25 +114,17 @@
         // Add event listener to the "Get City" button
         document.getElementById("btnLocation").addEventListener("click", getCityFromIP);
 
-        // Function to show provider details
-        function showProviderDetails(provider) {
-            const modal = new bootstrap.Modal(document.getElementById('serviceProviderModal'));
-            
-            // Update modal content
-            document.getElementById('providerName').textContent = provider.UserName;
-            document.getElementById('providerService').textContent = provider.Service;
-            document.getElementById('providerExperience').textContent = provider.YearsOfExperience;
-            document.getElementById('providerRate').textContent = provider.HourlyRate;
-            document.getElementById('providerLocation').textContent = provider.Location || 'Not specified';
-            document.getElementById('providerContact').textContent = provider.MobileNumber || 'Not available';
-            document.getElementById('providerEmail').textContent = provider.Email;
-            
-            modal.show();
-        }
+        // Modal handling
+        document.getElementById('filterByLocationBtn').addEventListener('click', function() {
+            const locationModal = new bootstrap.Modal(document.getElementById('locationModal'));
+            locationModal.show();
+        });
 
-        // Book service button handler
-        $(document).on('click', '#bookService', function() {
-            alert('Booking functionality will be implemented soon!');
+        document.getElementById('applyLocationFilter').addEventListener('click', function() {
+            const location = document.getElementById('modalLocationInput').value;
+            document.getElementById('locationInput').value = location;
+            const modal = bootstrap.Modal.getInstance(document.getElementById('locationModal'));
+            modal.hide();
         });
     </script>
 </body>

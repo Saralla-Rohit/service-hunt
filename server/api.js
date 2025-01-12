@@ -181,12 +181,20 @@ app.get("/api/getAllProvidersInfo", (req, res) => {
 app.get("/get-profiles/:Location", (req, res) => {
     mongoClient.connect(conString).then(clientObj => {
         var db = clientObj.db("serviceHunt");
-        db.collection("providersInfo").find({ Location: req.params.Location }).toArray().then(profile => {
-            res.json(profile)
-            console.log(profile)
-        })
-    })
-})
+        db.collection("providersInfo")
+            .find({ 
+                Location: { 
+                    $regex: req.params.Location, 
+                    $options: 'i' 
+                } 
+            })
+            .toArray()
+            .then(profile => {
+                res.json(profile);
+                console.log(profile);
+            });
+    });
+});
 
 // Get filtered providers based on service and location
 app.get("/get-filtered-providers", (req, res) => {
