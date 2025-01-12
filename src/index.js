@@ -553,9 +553,9 @@ $(document).on("keyup", "#txtRUserId", (e) => {
                     break
                 } else {
                     $("#lblUserIdError")
-                        .html("User Id available")
-                        .removeClass("text-danger")
-                        .addClass("text-success")
+                    .html("User Id available")
+                    .removeClass("text-danger")
+                    .addClass("text-success")
                 }
             }
         }
