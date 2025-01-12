@@ -94,34 +94,6 @@ const profileTemplate = (profile) =>
         </div>
     </div>`;
 
-// Service card template
-function generateServiceCard(provider) {
-    return `
-        <div class="col-lg-4 col-md-6 mb-3 ms-0.5">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">${provider.UserName}</h5>
-                    <p class="card-text"><i class="fas fa-tools me-2"></i>Service: ${provider.Service}</p>
-                    <p class="card-text"><i class="fas fa-dollar-sign me-2"></i>Rate: ₹${provider.HourlyRate}/hr</p>
-                    <p class="card-text"><i class="fas fa-briefcase me-2"></i>Experience: ${provider.YearsOfExperience} years</p>
-                    <p class="card-text"><i class="fas fa-map-marker-alt me-2"></i>Location: ${provider.Location}</p>
-                    <p class="card-text"><i class="fas fa-phone me-2"></i>Contact: ${provider.MobileNumber}</p>
-                </div>
-                <div class="card-footer bg-transparent border-top-0">
-                    <button class="btn btn-info w-100" onclick="window.location.href='mailto:${provider.Email}'">
-                        <i class="fas fa-envelope me-2"></i>View Info 
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-// Function to handle contacting provider
-function contactProvider(email) {
-    window.location.href = `mailto:${email}`;
-}
-
 // Check if user is logged in
 if (userId) {
     loadView("../public/provider-dashboard.html", function () {
@@ -155,21 +127,43 @@ $(document).on("click", "#back", () => loadView("../public/home.html"));
 
 // Register handler
 $(document).on("click", "#btnRegister", () => {
-    var user = {
-        UserId: $("#txtRUserId").val(),
-        UserName: $("#txtRUserName").val(),
-        Password: $("#txtRPassword").val(),
-        Email: $("#txtREmail").val(),
-        Mobile: $("#txtRMobile").val()
-    };
+    const userId = $("#txtRUserId").val();
+    const userName = $("#txtRUserName").val();
+    const email = $("#txtREmail").val();
+    const password = $("#txtRPassword").val();
+    const mobile = $("#txtRMobile").val();
 
+    // First check if user ID exists
     $.ajax({
-        method: "post",
-        url: "http://localhost:5500/register-user",
-        data: user,
-        success: () => {
-            alert("Registered Successfully..");
-            loadView("../public/login.html");
+        method: "get",
+        url: `http://localhost:5500/users/${userId}`,
+        success: (response) => {
+            if (response && response.length > 0) {
+                $("#lblUserIdError").text("User ID already exists").css("color", "red");
+                return;
+            }
+            
+            // If user ID doesn't exist, proceed with registration
+            $.ajax({
+                method: "post",
+                url: "http://localhost:5500/register-user",
+                data: {
+                    UserId: userId,
+                    UserName: userName,
+                    Email: email,
+                    Password: password,
+                    Mobile: mobile
+                },
+                success: () => {
+                    loadView("../public/login.html");
+                },
+                error: () => {
+                    $("#lblUserIdError").text("Registration failed").css("color", "red");
+                }
+            });
+        },
+        error: () => {
+            $("#lblUserIdError").text("Error checking user ID").css("color", "red");
         }
     });
 });
@@ -388,7 +382,24 @@ $(document).on("click", "#btnGuestUser", () => {
                 
                 // Generate and append cards for each provider
                 providersInfo.forEach(provider => {
-                    servicesContainer.append(generateServiceCard(provider));
+                    servicesContainer.append(`
+                        <div class="col-lg-4 col-md-6 mb-3 ms-0.5">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">${provider.UserName}</h5>
+                                    <p class="card-text"><i class="fas fa-tools me-2"></i>Service: ${provider.Service}</p>
+                                    <p class="card-text"><i class="fas fa-dollar-sign me-2"></i>Rate: ₹${provider.HourlyRate}/hr</p>
+                                    <p class="card-text"><i class="fas fa-briefcase me-2"></i>Experience: ${provider.YearsOfExperience} years</p>
+                                    <p class="card-text"><i class="fas fa-map-marker-alt me-2"></i>Location: ${provider.Location}</p>
+                                </div>
+                                <div class="card-footer bg-transparent border-top-0">
+                                    <button class="btn btn-info w-100" onclick="window.location.href='mailto:${provider.Email}'">
+                                        <i class="fas fa-envelope me-2"></i>View Info 
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `);
                 });
             },
             error: (err) => {
@@ -450,7 +461,24 @@ function applyFilters() {
                 $("#servicesContainer").append('<p>No service providers found matching all criteria.</p>');
             } else {
                 filteredProviders.forEach(provider => {
-                    $("#servicesContainer").append(generateServiceCard(provider));
+                    $("#servicesContainer").append(`
+                        <div class="col-lg-4 col-md-6 mb-3 ms-0.5">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">${provider.UserName}</h5>
+                                    <p class="card-text"><i class="fas fa-tools me-2"></i>Service: ${provider.Service}</p>
+                                    <p class="card-text"><i class="fas fa-dollar-sign me-2"></i>Rate: ₹${provider.HourlyRate}/hr</p>
+                                    <p class="card-text"><i class="fas fa-briefcase me-2"></i>Experience: ${provider.YearsOfExperience} years</p>
+                                    <p class="card-text"><i class="fas fa-map-marker-alt me-2"></i>Location: ${provider.Location}</p>
+                                </div>
+                                <div class="card-footer bg-transparent border-top-0">
+                                    <button class="btn btn-info w-100" onclick="window.location.href='mailto:${provider.Email}'">
+                                        <i class="fas fa-envelope me-2"></i>View Info 
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `);
                 });
             }
         },
@@ -475,9 +503,10 @@ $(document).on("change", "#yearsOfExperience", function() {
 });
 
 // Hourly Rate filter handler
-$(document).on("change", "#hourlyRate", function() {
+$(document).on("input", "#hourlyRate", function() {
+    const price = $(this).val();
+    $('#currentHourlyRate').text(`Price: ₹${price}`);
     currentFilters.hourlyRate = parseInt($(this).val()) || 500;
-    $("#priceRangeText").text(`Price Range: ₹${currentFilters.hourlyRate}`);
     applyFilters();
 });
 
@@ -496,62 +525,39 @@ $(document).on("click", "#filterByLocationBtn", () => {
 
 // Reset filters
 $(document).on("click", "#resetFilters", () => {
+    $('#hourlyRate').val(500);
+    $('#yearsOfExperience').val(0);
+    $('#currentHourlyRate').text('Price: ₹500');
     currentFilters = {
         location: '',
         service: '',
         experience: 0,
         hourlyRate: 500
     };
-    
-    // Reset UI
-    $("#serviceSelect").val('');
-    $("#locationInput").val('');
-    $("#yearsOfExperience").val('');
-    $("#hourlyRate").val('500');
-    $("#currentExperience").text('Selected Range: 0+ years');
-    $("#priceRangeText").text('Price Range: ₹500');
-    
-    // Show all providers
     applyFilters();
 });
 
-$(document).ready(function () {
+$(document).on("keyup", "#txtRUserId", (e) => {
+    console.log("User Id Typed: ", e.target.value);
     $.ajax({
         method: "get",
         url: "http://localhost:5500/providers",
-        success: (providers) => {
-            console.log("Providers fetched:", providers);
-
-            // Ensure the container is initially empty
-            $("#servicesContainer").html('');
-
-            if (providers && providers.length > 0) {
-                providers.forEach((provider) => {
-                    var cardBody = `
-                        <div class="card shadow-sm border-0 mb-4" style="width: 18rem;">
-                            <div class="card-header bg-primary text-white py-3">
-                                <h5 class="card-title mb-0">
-                                    <i class="fas fa-user-circle me-2"></i>${provider.UserName}
-                                </h5>
-                            </div>
-                            <div class="card-body bg-light">
-                                <p class="card-text">Email: ${provider.Email || "Not Provided"}</p>
-                                <p class="card-text">Mobile: ${provider.Mobile || "Not Provided"}</p>
-                                <p class="card-text">Location: ${provider.Location || "Not Provided"}</p>
-                                <button class="btn btn-info">Contact</button>
-                            </div>
-                        </div>
-                    `;
-                    // Append each card to the services container
-                    $("#servicesContainer").append(cardBody);
-                });
-            } else {
-                $("#servicesContainer").html("<p>No providers found.</p>");
+        success: (users) => {
+            console.log(users);
+            for (var user of users) {
+                console.log("Checking User: ", user.UserId);
+                if (user.UserId == e.target.value) {
+                    $("#lblUserIdError")
+                        .html("User Id already exist - try another")
+                        .addClass("text-danger")
+                    break
+                } else {
+                    $("#lblUserIdError")
+                        .html("User Id available")
+                        .removeClass("text-danger")
+                        .addClass("text-success")
+                }
             }
-        },
-        error: (err) => {
-            console.error("Error fetching providers:", err);
-            $("#servicesContainer").html("<p>Failed to load providers.</p>");
         }
-    });
-});
+    })
+})
