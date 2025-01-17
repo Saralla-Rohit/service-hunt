@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoClient = require("mongodb").MongoClient;
 const cors = require("cors");
+const path = require("path"); // To resolve file paths
 require('dotenv').config();
 const app = express();
 
@@ -51,8 +52,12 @@ connectDB().then(() => {
     process.exit(1);
 });
 
+// Serve static files (CSS, JS, images) from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve index.html for the root route
 app.get("/", (req, res) => {
-    res.send("hello");
+    res.sendFile(path.join(__dirname, 'public', 'index.html')); // Serve index.html
 });
 
 // Register user
@@ -131,6 +136,7 @@ app.get("/get-profile/:UserId", async (req, res) => {
     }
 });
 
+// Edit provider profile by UserId
 app.put("/edit-profile/:UserId", async (req, res) => {
     try {
         const db = await connectDB();
@@ -157,7 +163,7 @@ app.put("/edit-profile/:UserId", async (req, res) => {
     }
 });
 
-// Get all providers info
+// Get all provider profiles
 app.get("/providersInfo", async (req, res) => {
     try {
         const db = await connectDB();
