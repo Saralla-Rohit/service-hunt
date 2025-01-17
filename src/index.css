@@ -1,5 +1,5 @@
 body{
-    background-image: url("../public/images/background-image.png");
+    background-image: url("/images/background-image.png");
     background-size: cover;
     height: 100vh;
 }
@@ -10,4 +10,3 @@ body{
     justify-content: center;
     align-items: center;
 }
-

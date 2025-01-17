@@ -58,9 +58,16 @@ app.use('/images', express.static(path.join(__dirname, '..', 'public', 'images')
 app.use('/node_modules', express.static(path.join(__dirname, '..', 'node_modules')));
 app.use('/src', express.static(path.join(__dirname, '..', 'src')));
 
-// Serve index.html for the root route and any other routes
-app.get(["/", "/:page"], (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+// API Routes
+app.get("/providersInfo", async (req, res) => {
+    try {
+        const db = await connectDB();
+        const providersInfo = await db.collection("providersInfo").find({}).toArray();
+        res.json(providersInfo);
+    } catch (err) {
+        console.error("Error fetching providers info:", err);
+        res.status(500).json({ error: "Failed to fetch providers info" });
+    }
 });
 
 // Register user
@@ -250,5 +257,13 @@ app.get("/users/:userId", async (req, res) => {
     } catch (err) {
         console.error("Error checking user ID:", err);
         res.status(500).json({ error: "Failed to check user ID" });
+    }
+});
+
+// Catch-all route for serving index.html - MUST BE LAST
+app.get("*", (req, res) => {
+    // Only serve index.html for non-API routes
+    if (!req.path.startsWith('/api/')) {
+        res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
     }
 });
