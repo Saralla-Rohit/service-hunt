@@ -19,9 +19,10 @@
                         <label for="hourlyRate" class="form-label"><strong>Hourly Rate</strong></label>
                         <label for="" id="currentHourlyRate"></label>
                         <input type="range" class="form-range" id="hourlyRate" min="500" max="2000" step="100" value="500">
-                        <span id="hourlyRateValue">500</span>
-                        <span class="float-end">2000</span>
+                        <span id="hourlyRateValue">500 ₹</span> <!-- Added INR symbol here -->
+                        <span class="float-end" id="maxHourlyRate">2000 ₹</span> <!-- Added INR symbol here -->
                     </div>
+                    
                     <div class="mb-3">
                         <label for="serviceSelect" class="form-label"><strong>Services</strong></label>
                         <select class="form-select" id="serviceSelect">
@@ -56,8 +57,8 @@
                         <div class="d-flex w-100 input-group">
                             <input type="text" id="locationInput" class="form-control" placeholder="Enter location" />
                             <button class="btn btn-primary h-100" id="btnLocation">Get Current Location</button>
-                            <button class="btn btn-secondary h-100 ms-2" id="filterByLocationBtn">Filter by Location</button>
                         </div>
+                        <button class="btn btn-secondary h-100 ms-2" id="filterByLocationBtn">Filter by Location</button>
                     </h5>
             
                     <!-- Service Cards Container -->
@@ -68,19 +69,17 @@
             </div>
         </div>
     </div>
-
-    <!-- Service Provider Details Modal -->
     <div class="modal fade" id="serviceProviderModal" tabindex="-1" aria-labelledby="serviceProviderModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="serviceProviderModalLabel">Service Provider Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-8">
-                            <h4 id="providerName"></h4>
+                            <h4 id="providerName" class="text-info mb-3"></h4>
                             <p><strong>Service:</strong> <span id="providerService"></span></p>
                             <p><strong>Experience:</strong> <span id="providerExperience"></span> years</p>
                             <p><strong>Hourly Rate:</strong> ₹<span id="providerRate"></span></p>
@@ -91,13 +90,13 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="bookService">Book Service</button>
+                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
-
+    
+    
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
