@@ -53,11 +53,11 @@ connectDB().then(() => {
 });
 
 // Serve static files (CSS, JS, images) from the 'public' directory
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // Serve index.html for the root route
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html')); // Serve index.html
+    res.sendFile(path.join(__dirname, '..', 'public', 'index.html')); // Serve index.html
 });
 
 // Register user
