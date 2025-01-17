@@ -52,8 +52,10 @@ connectDB().then(() => {
     process.exit(1);
 });
 
-// Serve static files (CSS, JS, images) from the 'public' directory
+// Serve static files (CSS, JS, images) from various directories
 app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use('/node_modules', express.static(path.join(__dirname, '..', 'node_modules')));
+app.use('/src', express.static(path.join(__dirname, '..', 'src')));
 
 // Serve index.html for the root route
 app.get("/", (req, res) => {
