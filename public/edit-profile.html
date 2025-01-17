@@ -64,16 +64,13 @@
 <script>
 // Function to get the city from IP (for Edit Profile)
 function getCityFromIP() {
-    fetch('http://ip-api.com/json')
+    fetch('https://ipapi.co/json/')
         .then(response => response.json())
         .then(data => {
-            const city = data.city;
-            console.log("City from IP: " + city);
-            // Insert city into the "Location" textbox
-            document.getElementById("editCityTextbox").value = city;
+            document.getElementById("editCityTextbox").value = data.city;
         })
         .catch(error => {
-            console.log("Error fetching city data: " + error);
+            console.error("Error fetching city data: " + error);
             alert("Unable to fetch city data.");
         });
 }

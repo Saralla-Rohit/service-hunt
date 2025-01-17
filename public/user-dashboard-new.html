@@ -97,17 +97,15 @@
     <script>
         // Function to get the city from IP
         function getCityFromIP() {
-            fetch('http://ip-api.com/json')
+            fetch('https://ipapi.co/json/')
                 .then(response => response.json())
                 .then(data => {
-                    const city = data.city;
-                    console.log("City from IP: " + city);
-                    // Insert city into the "Location" textbox
-                    document.getElementById("locationInput").value = city;
+                    document.getElementById('locationInput').value = data.city;
+                    // Trigger the search with the detected city
+                    document.getElementById('searchByLocation').click();
                 })
                 .catch(error => {
-                    console.log("Error fetching city data: " + error);
-                    alert("Unable to fetch city data.");
+                    console.error('Error fetching city data:', error);
                 });
         }
 
