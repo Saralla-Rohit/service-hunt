@@ -101,8 +101,11 @@
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('locationInput').value = data.city;
-                    // Trigger the search with the detected city
-                    document.getElementById('searchByLocation').click();
+                    // Only trigger search if the button exists
+                    const searchButton = document.getElementById('searchByLocation');
+                    if (searchButton) {
+                        searchButton.click();
+                    }
                 })
                 .catch(error => {
                     console.error('Error fetching city data:', error);
