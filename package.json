@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "node": "20.11.1"
+  },
   "name": "service-hunt",
   "version": "1.0.0",
   "description": "user can access all types of services info at one place in their locality which gives user variety of options to pick from",
