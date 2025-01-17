@@ -7,7 +7,7 @@ const app = express();
 
 // CORS configuration
 app.use(cors({
-    origin: ["http://127.0.0.1:5500", "http://localhost:5500"],
+    origin: ["http://127.0.0.1:5500", "http://localhost:5500", "https://service-hunt.onrender.com"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
     credentials: true
@@ -54,12 +54,13 @@ connectDB().then(() => {
 
 // Serve static files (CSS, JS, images) from various directories
 app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use('/images', express.static(path.join(__dirname, '..', 'public', 'images')));
 app.use('/node_modules', express.static(path.join(__dirname, '..', 'node_modules')));
 app.use('/src', express.static(path.join(__dirname, '..', 'src')));
 
-// Serve index.html for the root route
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'public', 'index.html')); // Serve index.html
+// Serve index.html for the root route and any other routes
+app.get(["/", "/:page"], (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 
 // Register user

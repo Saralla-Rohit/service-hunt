@@ -96,11 +96,11 @@ const profileTemplate = (profile) =>
 
 // Check if user is logged in
 if (userId) {
-    loadView("../public/provider-dashboard.html", function () {
+    loadView("/provider-dashboard.html", function () {
         // Fetch the profile data and render it immediately
         $.ajax({
             method: "get",
-            url: `http://localhost:5500/get-profile/${userId}`,
+            url: window.location.origin + `/get-profile/${userId}`,
             success: (profile) => {
                 if (profile) {
                     $("#ProfileContainer").html(profileTemplate(profile));
@@ -115,15 +115,15 @@ if (userId) {
         });
     });
 } else {
-    loadView("../public/home.html");
+    loadView("/home.html");
 }
 
 // Navigation handlers
-$(document).on("click", "#btnServiceProvider", () => loadView("../public/auth.html"));
-$(document).on("click", "#btnCreateAccount", () => loadView("../public/register.html"));
-$(document).on("click", "#btnSignin", () => loadView("../public/login.html"));
-$(document).on("click", "#btnCancel", () => loadView("../public/auth.html"));
-$(document).on("click", "#back", () => loadView("../public/home.html"));
+$(document).on("click", "#btnServiceProvider", () => loadView("/auth.html"));
+$(document).on("click", "#btnCreateAccount", () => loadView("/register.html"));
+$(document).on("click", "#btnSignin", () => loadView("/login.html"));
+$(document).on("click", "#btnCancel", () => loadView("/auth.html"));
+$(document).on("click", "#back", () => loadView("/home.html"));
 
 // Register handler
 $(document).on("click", "#btnRegister", () => {
@@ -136,7 +136,7 @@ $(document).on("click", "#btnRegister", () => {
     // First check if user ID exists
     $.ajax({
         method: "get",
-        url: `http://localhost:5500/users/${userId}`,
+        url: window.location.origin + `/users/${userId}`,
         success: (response) => {
             if (response && response.length > 0) {
                 $("#lblUserIdError").text("User ID already exists").css("color", "red");
@@ -146,7 +146,7 @@ $(document).on("click", "#btnRegister", () => {
             // If user ID doesn't exist, proceed with registration
             $.ajax({
                 method: "post",
-                url: "http://localhost:5500/register-user",
+                url: window.location.origin + "/register-user",
                 data: {
                     UserId: userId,
                     UserName: userName,
@@ -155,7 +155,7 @@ $(document).on("click", "#btnRegister", () => {
                     Mobile: mobile
                 },
                 success: () => {
-                    loadView("../public/login.html");
+                    loadView("/login.html");
                 },
                 error: () => {
                     $("#lblUserIdError").text("Registration failed").css("color", "red");
@@ -175,14 +175,14 @@ $(document).on("click", "#btnLogin", () => {
 
     $.ajax({
         method: "get",
-        url: "http://localhost:5500/providers",
+        url: window.location.origin + "/providers",
         success: (users) => {
             var user = users.find(rec => rec.UserId == userid);
             if (user) {
                 if (user.Password == password) {
                     $.cookie("userid", user.UserId);
                     $.cookie("username", user.UserName);
-                    loadView("../public/provider-dashboard.html");
+                    loadView("/provider-dashboard.html");
                 } else {
                     alert("Invalid password");
                 }
@@ -197,12 +197,12 @@ $(document).on("click", "#btnLogin", () => {
 $(document).on("click", "#btnSignout", () => {
     $.removeCookie("username");
     $.removeCookie("userid");
-    loadView("../public/login.html");
+    loadView("/login.html");
 });
 
 // Create Profile handler
-$(document).on("click", "#btnCreateProfile", () => loadView("../public/create-profile.html"));
-$(document).on("click", "#btnCancelCreate", () => loadView("../public/provider-dashboard.html"));
+$(document).on("click", "#btnCreateProfile", () => loadView("/create-profile.html"));
+$(document).on("click", "#btnCancelCreate", () => loadView("/provider-dashboard.html"));
 
 // Profile creation handler
 $(document).on("click", "#createBtn", (e) => {
@@ -223,7 +223,7 @@ $(document).on("click", "#createBtn", (e) => {
 
     $.ajax({
         method: "post",
-        url: "http://localhost:5500/create-profile",
+        url: window.location.origin + "/create-profile",
         data: profile,
         success: () => {
             alert("Created Profile Successfully");
@@ -235,7 +235,7 @@ $(document).on("click", "#createBtn", (e) => {
             $("#cityTextbox").val();
             $("#selServices").val("");
 
-            loadView("../public/provider-dashboard.html", () => {
+            loadView("/provider-dashboard.html", () => {
                 $("#ProfileContainer").html(profileTemplate(profile));
             });
         }
@@ -251,11 +251,11 @@ $(document).on("click", "#btnEdit", (e) => {
         return;
     }
 
-    loadView("../public/edit-profile.html");
+    loadView("/edit-profile.html");
 
     $.ajax({
         method: "get",
-        url: `http://localhost:5500/get-profile/${UserId}`,
+        url: window.location.origin + `/get-profile/${UserId}`,
         success: (profile) => {
             console.log("Profile fetched:", profile);
             if (profile) {
@@ -304,7 +304,7 @@ $(document).on("click", "#btnSave", () => {
 
     $.ajax({
         method: "put",
-        url: `http://localhost:5500/edit-profile/${UserId}`,
+        url: window.location.origin + `/edit-profile/${UserId}`,
         data: JSON.stringify(profile),
         contentType: "application/json",
         dataType: "json",
@@ -315,11 +315,11 @@ $(document).on("click", "#btnSave", () => {
         success: (response) => {
             console.log("Profile update response:", response);
             alert("Profile updated successfully!");
-            loadView("../public/provider-dashboard.html", () => {
+            loadView("/provider-dashboard.html", () => {
                 // Refresh the profile data after update
                 $.ajax({
                     method: "get",
-                    url: `http://localhost:5500/get-profile/${UserId}`,
+                    url: window.location.origin + `/get-profile/${UserId}`,
                     xhrFields: {
                         withCredentials: true
                     },
@@ -342,12 +342,12 @@ $(document).on("click", "#btnSave", () => {
 });
 
 $(document).on("click", "#btnCancelEdit", () => {
-    loadView("../public/provider-dashboard.html", () => {
+    loadView("/provider-dashboard.html", () => {
         const userId = $.cookie("userid");
         if (userId) {
             $.ajax({
                 method: "get",
-                url: `http://localhost:5500/get-profile/${userId}`,
+                url: window.location.origin + `/get-profile/${userId}`,
                 success: (profile) => {
                     if (profile) {
                         $("#ProfileContainer").html(profileTemplate(profile));
@@ -365,10 +365,10 @@ $(document).on("click", "#btnCancelEdit", () => {
 });
 
 $(document).on("click", "#btnGuestUser", () => {
-    loadView("../public/user-dashboard.html", () => {
+    loadView("/user-dashboard.html", () => {
         // Fetch service providers info with complete details
         $.ajax({
-            url: "http://localhost:5500/providersInfo",
+            url: window.location.origin + "/providersInfo",
             method: "get",
             success: (providersInfo) => {
                 console.log("Received providers info:", providersInfo);
@@ -417,7 +417,7 @@ $(document).on("keyup", "#txtRUserId", (e) => {
     console.log("User Id Typed: ", e.target.value);
     $.ajax({
         method: "get",
-        url: "http://localhost:5500/providers",
+        url: window.location.origin + "/providers",
         success: (users) => {
             console.log(users);
             for (var user of users) {
@@ -483,7 +483,7 @@ $(document).on("click", "#filterByLocationBtn", () => {
         return;
     }
     $.ajax({
-        url: "http://localhost:5500/get-profiles/" + locationValue,
+        url: window.location.origin + "/get-profiles/" + locationValue,
         method: "get",
         success: function(providers) {
             currentProviders = providers;
@@ -519,7 +519,7 @@ $(document).on("click", "#resetFilters", () => {
 
 function loadProviders() {
     $.ajax({
-        url: "http://localhost:5500/providersInfo",
+        url: window.location.origin + "/providersInfo",
         method: "get",
         success: function(providers) {
             allProviders = providers;
