@@ -1,10 +1,18 @@
+// Add API URL configuration at the top of the file
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3000'
+    : 'https://service-hunt.onrender.com';
+
 function loadView(url, callback) {
     $.ajax({
         method: "get",
-        url: url,
+        url: API_URL + url,  // Prepend API_URL to load HTML files from the correct server
         success: (resp) => {
             $("section").html(resp);
             if (callback) callback();
+        },
+        error: (err) => {
+            console.error("Error loading view:", err);
         }
     });
 }
@@ -100,7 +108,7 @@ if (userId) {
         // Fetch the profile data and render it immediately
         $.ajax({
             method: "get",
-            url: window.location.origin + `/get-profile/${userId}`,
+            url: API_URL + `/get-profile/${userId}`,
             success: (profile) => {
                 if (profile) {
                     $("#ProfileContainer").html(profileTemplate(profile));
@@ -136,7 +144,7 @@ $(document).on("click", "#btnRegister", () => {
     // First check if user ID exists
     $.ajax({
         method: "get",
-        url: window.location.origin + `/users/${userId}`,
+        url: API_URL + `/users/${userId}`,
         success: (response) => {
             if (response && response.length > 0) {
                 $("#lblUserIdError").text("User ID already exists").css("color", "red");
@@ -146,7 +154,7 @@ $(document).on("click", "#btnRegister", () => {
             // If user ID doesn't exist, proceed with registration
             $.ajax({
                 method: "post",
-                url: window.location.origin + "/register-user",
+                url: API_URL + "/register-user",
                 data: {
                     UserId: userId,
                     UserName: userName,
@@ -175,7 +183,7 @@ $(document).on("click", "#btnLogin", () => {
 
     $.ajax({
         method: "get",
-        url: window.location.origin + "/providers",
+        url: API_URL + "/providers",
         success: (users) => {
             var user = users.find(rec => rec.UserId == userid);
             if (user) {
@@ -223,7 +231,7 @@ $(document).on("click", "#createBtn", (e) => {
 
     $.ajax({
         method: "post",
-        url: window.location.origin + "/create-profile",
+        url: API_URL + "/create-profile",
         data: profile,
         success: () => {
             alert("Created Profile Successfully");
@@ -255,7 +263,7 @@ $(document).on("click", "#btnEdit", (e) => {
 
     $.ajax({
         method: "get",
-        url: window.location.origin + `/get-profile/${UserId}`,
+        url: API_URL + `/get-profile/${UserId}`,
         success: (profile) => {
             console.log("Profile fetched:", profile);
             if (profile) {
@@ -304,7 +312,7 @@ $(document).on("click", "#btnSave", () => {
 
     $.ajax({
         method: "put",
-        url: window.location.origin + `/edit-profile/${UserId}`,
+        url: API_URL + `/edit-profile/${UserId}`,
         data: JSON.stringify(profile),
         contentType: "application/json",
         dataType: "json",
@@ -319,7 +327,7 @@ $(document).on("click", "#btnSave", () => {
                 // Refresh the profile data after update
                 $.ajax({
                     method: "get",
-                    url: window.location.origin + `/get-profile/${UserId}`,
+                    url: API_URL + `/get-profile/${UserId}`,
                     xhrFields: {
                         withCredentials: true
                     },
@@ -347,7 +355,7 @@ $(document).on("click", "#btnCancelEdit", () => {
         if (userId) {
             $.ajax({
                 method: "get",
-                url: window.location.origin + `/get-profile/${userId}`,
+                url: API_URL + `/get-profile/${userId}`,
                 success: (profile) => {
                     if (profile) {
                         $("#ProfileContainer").html(profileTemplate(profile));
@@ -368,7 +376,7 @@ $(document).on("click", "#btnGuestUser", () => {
     loadView("/user-dashboard.html", () => {
         // Fetch service providers info with complete details
         $.ajax({
-            url: window.location.origin + "/providersInfo",
+            url: API_URL + "/providersInfo",
             method: "get",
             success: (providersInfo) => {
                 console.log("Received providers info:", providersInfo);
@@ -417,7 +425,7 @@ $(document).on("keyup", "#txtRUserId", (e) => {
     console.log("User Id Typed: ", e.target.value);
     $.ajax({
         method: "get",
-        url: window.location.origin + "/providers",
+        url: API_URL + "/providers",
         success: (users) => {
             console.log(users);
             for (var user of users) {
@@ -483,7 +491,7 @@ $(document).on("click", "#filterByLocationBtn", () => {
         return;
     }
     $.ajax({
-        url: window.location.origin + "/get-profiles/" + locationValue,
+        url: API_URL + "/get-profiles/" + locationValue,
         method: "get",
         success: function(providers) {
             currentProviders = providers;
@@ -519,11 +527,14 @@ $(document).on("click", "#resetFilters", () => {
 
 function loadProviders() {
     $.ajax({
-        url: window.location.origin + "/providersInfo",
         method: "get",
+        url: API_URL + "/providersInfo",
+        xhrFields: {
+            withCredentials: true
+        },
         success: function(providers) {
             allProviders = providers;
-            currentProviders = providers;
+            currentProviders = [...allProviders];
             displayProviders(currentProviders);
         },
         error: function(err) {

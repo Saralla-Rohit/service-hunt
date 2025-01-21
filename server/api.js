@@ -1,15 +1,15 @@
 const express = require("express");
 const mongoClient = require("mongodb").MongoClient;
 const cors = require("cors");
-const path = require("path"); // To resolve file paths
+const path = require("path");
 require('dotenv').config();
 const app = express();
 
 // CORS configuration
 app.use(cors({
-    origin: ["http://127.0.0.1:5500", "http://localhost:5500", "https://service-hunt.onrender.com"],
+    origin: ["http://127.0.0.1:5500", "http://localhost:5500", "http://127.0.0.1:3000", "http://localhost:3000", "https://service-hunt.onrender.com"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
     credentials: true
 }));
 
@@ -17,6 +17,20 @@ app.use(cors({
 app.use(express.json());
 // Parse URL-encoded bodies
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files from the public and src directories
+app.use(express.static(path.join(__dirname, '../public')));
+app.use('/src', express.static(path.join(__dirname, '../src')));
+
+// Serve index.html for the root route
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
+// Handle HTML routes by serving files from public directory
+app.get('/*.html', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public', req.path));
+});
 
 const conString = process.env.MONGO_URL;
 if (!conString) {
@@ -41,22 +55,6 @@ async function connectDB() {
         throw err;
     }
 }
-
-// Ensure database connection before starting the server
-connectDB().then(() => {
-    app.listen(5500, () => {
-        console.log("App is listening on http://localhost:5500");
-    });
-}).catch(err => {
-    console.error("Failed to start server:", err);
-    process.exit(1);
-});
-
-// Serve static files (CSS, JS, images) from various directories
-app.use(express.static(path.join(__dirname, '..', 'public')));
-app.use('/images', express.static(path.join(__dirname, '..', 'public', 'images')));
-app.use('/node_modules', express.static(path.join(__dirname, '..', 'node_modules')));
-app.use('/src', express.static(path.join(__dirname, '..', 'src')));
 
 // API Routes
 app.get("/providersInfo", async (req, res) => {
@@ -264,6 +262,16 @@ app.get("/users/:userId", async (req, res) => {
 app.get("*", (req, res) => {
     // Only serve index.html for non-API routes
     if (!req.path.startsWith('/api/')) {
-        res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+        res.sendFile(path.join(__dirname, '../public', 'index.html'));
     }
+});
+
+// Ensure database connection before starting the server
+connectDB().then(() => {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+    });
+}).catch(err => {
+    console.error("Failed to start server:", err);
 });
